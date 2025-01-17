@@ -1,0 +1,7 @@
+# VisDrone.yaml
+train: /media/citi-ai/matthew/visdrone-train/datasets/Okutama/yolo-format/train/images  # Path to training images
+val: /media/citi-ai/matthew/visdrone-train/datasets/Okutama/yolo-format/val/images    # (Optional) Path to validation images, can be the same as train for now
+test: /media/citi-ai/matthew/visdrone-train/datasets/Okutama/yolo-format/test/images    # Path to test images
+
+nc: 1  # Number of classes (1 class: Person)
+names: ['Person']  # Class names
