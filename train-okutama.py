@@ -9,34 +9,36 @@ yolo11n_visdrone_pth = "/media/citi-ai/matthew/visdrone-train/runs/detect/train/
 yolo11n_pth = "yolo11n.pt"
 yolo11s_pth = "yolo11s.pt"
 rtdetr_pth = "rtdetr-l.pt"
+rtdetrok_pth = "/media/citi-ai/matthew/visdrone-train/results/exp1_training_results/exp_1_rtdetr-l_SGD_lr0.01_Okutama_finetuned/weights/best.pt"
+rtdetrvd_pth = "/media/citi-ai/matthew/visdrone-train/results/exp1_training_results/exp_1_rtdetr-l_SGD_lr0.01_VisDrone/weights/best.pt"
 #rtdetr_resnet50_pth = "/media/citi-ai/matthew/visdrone-train/rtdetr-resnet50.yaml" # resnet50 backbone
 
 model_dir = {
     #"yolo11n-vd": {"type": "yolo", "path": yolo11n_visdrone_pth},
-    "yolo11n": {"type": "yolo", "path": yolo11n_pth},
-    "yolo11s": {"type": "yolo", "path": yolo11s_pth},
-    "rtdetr-l": {"type": "rtdetr-l", "path": rtdetr_pth},
-    #"rtdetr-res50": {"type": "rtdetr_r50", "path": rtdetr_pth}
+    # "yolo11n": {"type": "yolo", "path": yolo11n_pth},
+    # "yolo11s": {"type": "yolo", "path": yolo11s_pth},
+    #"rtdetr-l": {"type": "rtdetr-l", "path": rtdetr_pth},
+    "rtdetr-l": {"type": "rtdetr-l", "path": rtdetrok_pth}
 }
 
 # Define experiments: model, optimizer, and learning rate combinations
 experiments = [
-    {"optimizer": "Adam", "lr": 0.01},
-    {"optimizer": "Adam", "lr": 0.001},
-    {"optimizer": "Adam", "lr": 0.0005},
-    {"optimizer": "SGD", "lr": 0.01},
+    # {"optimizer": "Adam", "lr": 0.01},
+    # {"optimizer": "Adam", "lr": 0.001},
+    # {"optimizer": "Adam", "lr": 0.0005},
     {"optimizer": "SGD", "lr": 0.001},
-    {"optimizer": "SGD", "lr": 0.0005},
+    # {"optimizer": "SGD", "lr": 0.01},
+    # {"optimizer": "SGD", "lr": 0.001},
+    # {"optimizer": "SGD", "lr": 0.0005},
     # duplicate runs for training on another dataset
     #{"optimizer": "SGD", "lr": 0.001},
 ]
 
 # Paths and parameters
 data_path = "Okutama.yaml"  # Path to your dataset YAML file
-epochs = 30  # Number of training epochs
+epochs = 400  # Number of training epochs
 imgsz = 640  # Image size for training
 results_dir = "/media/citi-ai/matthew/visdrone-train/results/exp1_training_results"  # Directory to save results
-
 # Ensure results directory exists
 os.makedirs(results_dir, exist_ok=True)
 
@@ -58,27 +60,26 @@ for model_name, model_info in model_dir.items():
     # Loop through experiments
     for i, exp in enumerate(experiments):
         print(f"\nStarting Experiment {i + 1}: {exp}")
-        print(i)
         
-        # Define unique experiment name for results
-        exp_name = f"exp_{i + 1}_{model_name}_{exp['optimizer']}_lr{exp['lr']}"
-
-        # if model_type == "rtdetr-l" and i > 5:
+        # if model_type == "rtdetr-l":
         #     data_path = "VisDrone.yaml"
-        #     print("never never never")
         # else:
         #     continue
+        # Define unique experiment name for results
+        exp_name = f"exp_{i + 1}_{model_name}_{exp['optimizer']}_lr{exp['lr']}_{data_path.split('.')[0]}_finetuned"
 
         # Train the model
         model.train(
             data=data_path,
+            batch=4,
             epochs=epochs,
             imgsz=imgsz,
             optimizer=exp["optimizer"],
             lr0=exp["lr"],
-            patience=10,
+            patience=50,
             project=results_dir,
-            name=exp_name
+            name=exp_name,
+            #single_cls=True
         )
 
         print(f"Experiment {i + 1} completed! Results saved in {results_dir}/{exp_name}")
