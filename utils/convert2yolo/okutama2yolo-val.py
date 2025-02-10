@@ -1,6 +1,15 @@
 import os
 import shutil
 
+"""
+Okutama-Action does not contain a separated validation and test dataset. 
+This script will split a part of the training data to use for the validation.
+Sequences were selected to ensure no overlap with the training data - similar to how the
+test data sequences were selected (see Okutama-Actions docs for info on this)
+
+It additionally converts the data to YOLO format
+"""
+
 # List of sequences to use for validation
 val_data = ['1.2.2', '2.2.2', 
             '1.2.11', '2.2.11', 
